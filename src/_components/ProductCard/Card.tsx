@@ -3,15 +3,33 @@ import { ProductType } from "@/types";
 import { ShoppingCart } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import React from "react";
+import React, { useState } from "react";
 
 export default function Card({ product }: { product: ProductType }) {
+  const [productType, setproductType] = useState({
+    color: product.colors[0],
+    size: product.sizes[0],
+  });
+
+  const handelproductType = ({
+    type,
+    value,
+  }: {
+    type: "color" | "size";
+    value: string;
+  }) => {
+    setproductType((prev) => ({
+      ...prev,
+      [type]: value,
+    }));
+  };
+
   return (
     <div className="shadow-lg rounded-lg overflow-hidden">
       <Link href={`/product/${product.id}`}>
         <div className="relative aspect-[2/3]">
           <Image
-            src={product.images[product.colors[0]]}
+            src={product.images[productType.color]}
             alt={product.name}
             fill
             className="object-cover hover:scale-105 transition-all duration-300"
@@ -35,6 +53,9 @@ export default function Card({ product }: { product: ProductType }) {
                   key={size}
                   value={size}
                   className="rounded-md flex items-center gap-2"
+                  onClick={() =>
+                    handelproductType({ type: "size", value: size })
+                  }
                 >
                   {size.toUpperCase()}
                 </option>
@@ -48,7 +69,14 @@ export default function Card({ product }: { product: ProductType }) {
               {product.colors.map((color) => (
                 <div
                   key={color}
-                  className="border-2 rounded-full border-gray-300 cursor-pointer hover:scale-110 transition-all duration-300"
+                  className={`rounded-full ${
+                    productType.color === color
+                      ? " border-gray-400"
+                      : "border-gray-200"
+                  } border-1 p-[1.2] cursor-pointer hover:scale-110 transition-all duration-300`}
+                  onClick={() =>
+                    handelproductType({ type: "color", value: color })
+                  }
                 >
                   <div
                     className={`w-4 h-4 rounded-full p-2 `}
