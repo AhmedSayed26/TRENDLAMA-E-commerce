@@ -1,12 +1,14 @@
 "use client";
 import React from "react";
-import { CartItemsType, ShippingFormInputs } from "@/types";
+import { CartItemType, ShippingFormInputs } from "@/types";
 import { useSearchParams, useRouter } from "next/navigation";
 import { ArrowRight, Trash2 } from "lucide-react";
 import { useState } from "react";
 import ShippingForm from "@/_components/ShippingForm/ShippingForm";
 import ShippingPayment from "./../../_components/ShippingPayment/ShippingPayment";
 import Image from "next/image";
+import useCartStore from "@/stores/cartStore";
+import { toast } from "react-toastify";
 const steps = [
   {
     id: 1,
@@ -22,69 +24,16 @@ const steps = [
   },
 ];
 
-const cartItems: CartItemsType = [
-  {
-    id: 1,
-    name: "Adidas CoreFit T-Shirt",
-    shortDescription:
-      "Lorem ipsum dolor sit amet consect adipisicing elit lorem ipsum dolor sit.",
-    description:
-      "Lorem ipsum dolor sit amet consect adipisicing elit lorem ipsum dolor sit. Lorem ipsum dolor sit amet consect adipisicing elit lorem ipsum dolor sit. Lorem ipsum dolor sit amet consect adipisicing elit lorem ipsum dolor sit.",
-    price: 39.9,
-    sizes: ["s", "m", "l", "xl", "xxl"],
-    colors: ["gray", "purple", "green"],
-    images: {
-      gray: "/products/1g.png",
-      purple: "/products/1p.png",
-      green: "/products/1gr.png",
-    },
-    quantity: 1,
-    selectedSize: "m",
-    selectedColor: "gray",
-  },
-  {
-    id: 2,
-    name: "Puma Ultra Warm Zip",
-    shortDescription:
-      "Lorem ipsum dolor sit amet consect adipisicing elit lorem ipsum dolor sit.",
-    description:
-      "Lorem ipsum dolor sit amet consect adipisicing elit lorem ipsum dolor sit. Lorem ipsum dolor sit amet consect adipisicing elit lorem ipsum dolor sit. Lorem ipsum dolor sit amet consect adipisicing elit lorem ipsum dolor sit.",
-    price: 59.9,
-    sizes: ["s", "m", "l", "xl"],
-    colors: ["gray", "green"],
-    images: { gray: "/products/2g.png", green: "/products/2gr.png" },
-    quantity: 1,
-    selectedSize: "l",
-    selectedColor: "gray",
-  },
-  {
-    id: 3,
-    name: "Nike Air Essentials Pullover",
-    shortDescription:
-      "Lorem ipsum dolor sit amet consect adipisicing elit lorem ipsum dolor sit.",
-    description:
-      "Lorem ipsum dolor sit amet consect adipisicing elit lorem ipsum dolor sit. Lorem ipsum dolor sit amet consect adipisicing elit lorem ipsum dolor sit. Lorem ipsum dolor sit amet consect adipisicing elit lorem ipsum dolor sit.",
-    price: 69.9,
-    sizes: ["s", "m", "l"],
-    colors: ["green", "blue", "black"],
-    images: {
-      green: "/products/3gr.png",
-      blue: "/products/3b.png",
-      black: "/products/3bl.png",
-    },
-    quantity: 1,
-    selectedSize: "l",
-    selectedColor: "black",
-  },
-];
-
 export default function CartPage() {
-  const [shippingForm, setShippingForm] = useState<ShippingFormInputs | null>(
-    null
-  );
+  const { cart, removeFromCart } = useCartStore();
+  const [shippingForm, setShippingForm] = useState<ShippingFormInputs>();
   const searchparams = useSearchParams();
   const router = useRouter();
   const activeStep = parseInt(searchparams.get("step") || "1");
+  const HandelRemoveItemFromCart = (item: CartItemType) => {
+    removeFromCart(item);
+    toast.success("Item removed from cart");
+  };
   return (
     <div className="flex flex-col gap-8 items-center justify-center mt-12">
       <h1 className="text-2xl font-medium">Your Shopping Cart</h1>
@@ -116,10 +65,10 @@ export default function CartPage() {
       <div className="w-full flex flex-col lg:flex-row gap-16">
         <div className="w-full lg:w-7/12 shadow-lg border-1 border-gray-100 p-8 rounded-lg flex flex-col">
           {activeStep === 1 ? (
-            cartItems.map((item) => (
+            cart.map((item) => (
               <div
+                key={`${item.id}-${item.selectedSize}-${item.selectedColor}`}
                 className="flex items-center justify-between mb-4"
-                key={item.id}
               >
                 <div className="flex gap-8">
                   <div className="relative w-32 h-35 bg-gray-50 rounded-lg overflow-hidden">
@@ -146,7 +95,10 @@ export default function CartPage() {
                     <p className="font-medium ">{item.price.toFixed(2)}</p>
                   </div>
                 </div>
-                <button className="w-8 h-8 rounded-full bg-red-100 text-red-400 flex items-center justify-center hover:bg-red-300 transition-all duration-300 cursor-pointer">
+                <button
+                  onClick={() => HandelRemoveItemFromCart(item)}
+                  className="w-8 h-8 rounded-full bg-red-100 text-red-400 flex items-center justify-center hover:bg-red-300 transition-all duration-300 cursor-pointer"
+                >
                   <Trash2 className="w-3 h-3"></Trash2>
                 </button>
               </div>
@@ -166,7 +118,7 @@ export default function CartPage() {
               <p className="text-gray-500">Total</p>
               <p className="font-medium">
                 $
-                {cartItems
+                {cart
                   .reduce((acc, item) => acc + item.price * item.quantity, 0)
                   .toFixed(2)}
               </p>
@@ -184,7 +136,7 @@ export default function CartPage() {
               <p className="text-gray-800 font-medium">Total</p>
               <p className="font-medium">
                 $
-                {cartItems
+                {cart
                   .reduce((acc, item) => acc + item.price * item.quantity, 0)
                   .toFixed(2)}
               </p>
