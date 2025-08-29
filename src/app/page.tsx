@@ -5,15 +5,17 @@ import React from "react";
 export default async function Home({
   searchParams,
 }: {
-  searchParams: Promise<{ category: string }>;
+  searchParams: Promise<{ category: string; search?: string }>;
 }) {
-  const category = (await searchParams).category || "";
+  const params = await searchParams;
+  const category = params.category || "";
+  
   return (
     <div>
       <div className="relative aspect-[3/1] mb-12">
         <Image src="/featured.png" alt="Featured" fill />
       </div>
-      <ProductList category={category} params="Home"></ProductList>
+      <ProductList category={category} sort="" params="Home"></ProductList>
     </div>
   );
 }

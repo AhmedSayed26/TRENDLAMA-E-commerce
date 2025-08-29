@@ -1,13 +1,16 @@
+"use client";
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 import SearchBar from "../SearchBar/SearchBar";
-import { Bell, Home } from "lucide-react";
+import { BaggageClaim, Bell, Home } from "lucide-react";
 import ShopingCart from "../ShopingCart/ShopingCart";
+import useAuthStore from "@/stores/authStore";
 
 export default function Navbar() {
+  const { isAuthenticated, user, logout } = useAuthStore();
   return (
-    <nav className="w-full flex justify-between items-center border-b  border-gray-200 pb-4">
+    <nav className="w-full flex justify-between items-center border-b border-gray-200 pb-4">
       <Link href="/" className="flex items-center">
         <Image
           src="/logo.png"
@@ -17,17 +20,31 @@ export default function Navbar() {
           className="w-6 h-6 md:w-9 md:h-9"
         ></Image>
         <p className="text-md font-medium tracking-wider hidden md:block">
-          TRENDLAMA.
+          TREND.
         </p>
       </Link>
-      <div className="flex items-center gap-6">
+      <div className="flex items-center gap-2 sm:gap-4 md:gap-6">
         <SearchBar></SearchBar>
-        <Link href="/">
+        <Link href="/" className="hidden sm:block">
           <Home className="w-4 h-4 text-gray-600" />
         </Link>
-        <Bell className="w-4 h-4 text-gray-600"></Bell>
+        <Link href="/orders" className="text-sm text-gray-700 underline">
+          <BaggageClaim className="w-4 h-4 text-gray-600" />
+        </Link>
         <ShopingCart></ShopingCart>
-        <Link href="/Login">Sign in</Link>
+        {!isAuthenticated ? (
+          <>
+            <Link href="/login" className="text-sm">Login</Link>
+            <Link href="/register" className="text-sm">Register</Link>
+          </>
+        ) : (
+          <>
+            <span className="text-sm text-gray-600 hidden sm:block">{user?.name || user?.email}</span>
+            <button onClick={logout} className="text-sm text-gray-600">
+              Logout
+            </button>
+          </>
+        )}
       </div>
     </nav>
   );

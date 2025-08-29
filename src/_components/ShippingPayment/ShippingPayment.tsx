@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import { PaymentFormInputs, paymentFormSchema } from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -5,6 +6,10 @@ import { ArrowRight, ShoppingCart } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { SubmitHandler, useForm } from "react-hook-form";
+import { toast } from "react-toastify";
+import useCartStore from "@/stores/cartStore";
+import useAuthStore from "@/stores/authStore";
+import useOrdersStore from "@/stores/ordersStore";
 
 export default function ShippingPayment() {
   const {
@@ -16,7 +21,30 @@ export default function ShippingPayment() {
   });
 
   const router = useRouter();
-  const handlePaymentForm: SubmitHandler<PaymentFormInputs> = (data) => {};
+  const { cart, clearCart } = useCartStore();
+  const { user, isAuthenticated } = useAuthStore();
+  const { addOrder } = useOrdersStore();
+  const handlePaymentForm: SubmitHandler<PaymentFormInputs> = (_data) => {
+    if (!isAuthenticated || !user) {
+      toast.error("Please login to complete checkout.");
+      return;
+    }
+    if (cart.length === 0) {
+      toast.error("Your cart is empty.");
+      return;
+    }
+    const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    addOrder({
+      id: crypto.randomUUID(),
+      userId: user.id,
+      items: cart,
+      total,
+      createdAt: new Date().toISOString(),
+    });
+    clearCart();
+    router.push("/orders", { scroll: false });
+    toast.success("Payment successful, order confirmed!");
+  };
   return (
     <form
       className="flex flex-col gap-4"

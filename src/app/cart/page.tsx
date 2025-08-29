@@ -81,7 +81,9 @@ export default function CartPage() {
                   </div>
                   <div className="flex flex-col gap-3">
                     <div className="flex flex-col gap-1">
-                      <p className="text-sm font-medium">{item.name}</p>
+                      <div className="flex justify-between items-center gap-4">
+                        <p className="text-sm font-medium">{item.name}</p>
+                      </div>
                       <p className="text-xs text-gray-500">
                         Quantity: {item.quantity}
                       </p>

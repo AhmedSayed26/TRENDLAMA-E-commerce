@@ -1,5 +1,6 @@
 "use client";
 import useCartStore from "@/stores/cartStore";
+import useAuthStore from "@/stores/authStore";
 import { ProductType } from "@/types";
 import { ShoppingCart } from "lucide-react";
 import Image from "next/image";
@@ -9,6 +10,7 @@ import { toast } from "react-toastify";
 
 export default function Card({ product }: { product: ProductType }) {
   const { addToCart } = useCartStore();
+  const { isAuthenticated } = useAuthStore();
   const [productType, setproductType] = useState({
     color: product.colors[0],
     size: product.sizes[0],
@@ -28,6 +30,10 @@ export default function Card({ product }: { product: ProductType }) {
   };
 
   function handelAddToCart() {
+    if (!isAuthenticated) {
+      toast.error("Please login to add items to cart");
+      return;
+    }
     addToCart({
       ...product,
       quantity: 1,
@@ -39,7 +45,7 @@ export default function Card({ product }: { product: ProductType }) {
 
   return (
     <div className="shadow-lg rounded-lg overflow-hidden">
-      <Link href={`/product/${product.id}`}>
+      <Link href={`/products/${product.id}`}>
         <div className="relative aspect-[2/3]">
           <Image
             src={product.images[productType.color]}

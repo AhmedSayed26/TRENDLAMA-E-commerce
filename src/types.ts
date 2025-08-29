@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export type ProductType = {
-  id: string | number;
+  id: number;
   name: string;
   shortDescription: string;
   description: string;
@@ -21,6 +21,25 @@ export type CartItemType = ProductType & {
 
 export type CartItemsType = CartItemType[];
 
+// Orders
+export type OrderType = {
+  id: string;
+  userId: string;
+  items: CartItemsType;
+  total: number;
+  createdAt: string; // ISO string
+};
+
+export type OrdersStateType = {
+  orders: OrderType[];
+  hasHydrated: boolean;
+};
+
+export type OrdersActionsType = {
+  addOrder: (order: OrderType) => void;
+  clearOrdersForUser: (userId: string) => void;
+};
+
 export const shippingFormSchema = z.object({
   name: z.string().min(1, "Name is required!"),
   email: z.email().min(1, "Email is required!"),
@@ -39,8 +58,8 @@ export const paymentFormSchema = z.object({
   cardHolder: z.string().min(1, "Card holder is required!"),
   cardNumber: z
     .string()
-    .min(16, "Card Number is required!")
-    .max(16, "Card Number is required!"),
+    .min(11, "Card Number is required!")
+    .max(11, "Card Number is required!"),
   expirationDate: z
     .string()
     .regex(
@@ -61,4 +80,23 @@ export type CartStoreActionsType = {
   addToCart: (product: CartItemType) => void;
   removeFromCart: (product: CartItemType) => void;
   clearCart: () => void;
+};
+
+// Auth types
+export type AuthUser = {
+  id: string;
+  email: string;
+  name?: string;
+};
+
+export type AuthStoreStateType = {
+  isAuthenticated: boolean;
+  user: AuthUser | null;
+  hasHydrated: boolean;
+};
+
+export type AuthStoreActionsType = {
+  login: (email: string, password: string) => Promise<void> | void;
+  register: (name: string, email: string, password: string) => Promise<void> | void;
+  logout: () => void;
 };

@@ -1,17 +1,23 @@
+"use client";
 import React from "react";
 import { ProductsType } from "@/types";
 import Categories from "../Categories/Categories";
 import Card from "../ProductCard/Card";
 import Link from "next/link";
 import Filter from "../Filter/Filter";
+import useSearchStore from "@/stores/searchStore";
 
 export default function ProductList({
   category,
+  sort,
   params,
 }: {
   category: string;
+  sort: string;
   params: "Home" | "products";
 }) {
+  const { filterProducts } = useSearchStore();
+  
   const products: ProductsType = [
     {
       id: 1,
@@ -111,7 +117,7 @@ export default function ProductList({
     },
     {
       id: 8,
-      name: "Levi’s Classic Denim",
+      name: "Levi's Classic Denim",
       shortDescription:
         "Lorem ipsum dolor sit amet consect adipisicing elit lorem ipsum dolor sit.",
       description:
@@ -122,18 +128,39 @@ export default function ProductList({
       images: { blue: "/products/8b.png", green: "/products/8gr.png" },
     },
   ];
+
+  let sortedProducts = [...products];
+
+  if (sort === "asc") {
+    sortedProducts.sort((a, b) => a.price - b.price);
+  } else if (sort === "desc") {
+    sortedProducts.sort((a, b) => b.price - a.price);
+  } else if (sort === "newest") {
+    sortedProducts.sort((a, b) => b.id - a.id);
+  } else if (sort === "oldest") {
+    sortedProducts.sort((a, b) => a.id - b.id);
+  }
+
+  // Apply search filter
+  const filteredProducts = filterProducts(sortedProducts);
+
   return (
     <div className="w-full">
-      <Categories></Categories>
+      <Categories />
       {params === "products" && <Filter />}
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 2xl:grid-cols-4 gap-12">
-        {products.map((product) => (
+        {filteredProducts.map((product) => (
           <Card key={product.id} product={product} />
         ))}
       </div>
+      {filteredProducts.length === 0 && (
+        <div className="text-center py-8">
+          <p className="text-gray-500">No products found matching your search.</p>
+        </div>
+      )}
       <Link
         href={category ? `products/?category=${category}` : "/products"}
-        className="flex justify-end mt-4 underline text-sm text-gray-500"
+        className="flex justify-end mt-4 underline text-md text-gray-600"
       >
         View All Products
       </Link>
