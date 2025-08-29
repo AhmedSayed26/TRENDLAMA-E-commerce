@@ -19,7 +19,7 @@ export default function LoginPage() {
     try {
       await login(email, password);
       router.push("/");
-    } catch (err: unknown) {
+    } catch {
       setError("Failed to login. Please try again.");
     } finally {
       setLoading(false);
@@ -64,6 +64,7 @@ export default function LoginPage() {
     </div>
   );
 }
+
 
 
 

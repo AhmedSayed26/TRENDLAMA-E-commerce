@@ -4,7 +4,7 @@ import { persist, createJSONStorage } from "zustand/middleware";
 
 const useOrdersStore = create<OrdersStateType & OrdersActionsType>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       orders: [],
       hasHydrated: false,
 
@@ -13,6 +13,11 @@ const useOrdersStore = create<OrdersStateType & OrdersActionsType>()(
 
       clearOrdersForUser: (userId: string) =>
         set((state) => ({ orders: state.orders.filter((o) => o.userId !== userId) })),
+
+      getOrdersByEmail: (email: string) => {
+        const { orders } = get();
+        return orders.filter((order) => order.userId === email);
+      },
     }),
     {
       name: "orders-storage",
@@ -27,5 +32,3 @@ const useOrdersStore = create<OrdersStateType & OrdersActionsType>()(
 );
 
 export default useOrdersStore;
-
-

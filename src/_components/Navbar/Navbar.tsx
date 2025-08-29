@@ -3,12 +3,20 @@ import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 import SearchBar from "../SearchBar/SearchBar";
-import { BaggageClaim, Bell, Home } from "lucide-react";
+import { BaggageClaim, Home } from "lucide-react";
 import ShopingCart from "../ShopingCart/ShopingCart";
 import useAuthStore from "@/stores/authStore";
 
 export default function Navbar() {
   const { isAuthenticated, user, logout } = useAuthStore();
+  
+  // Debug: Log user data to see what's happening
+  React.useEffect(() => {
+    if (user) {
+      console.log('Navbar user data:', user);
+    }
+  }, [user]);
+  
   return (
     <nav className="w-full flex justify-between items-center border-b border-gray-200 pb-4">
       <Link href="/" className="flex items-center">
@@ -39,7 +47,9 @@ export default function Navbar() {
           </>
         ) : (
           <>
-            <span className="text-sm text-gray-600 hidden sm:block">{user?.name || user?.email}</span>
+            <span className="text-sm text-gray-600">
+              {user?.name ? user.name : user?.email}
+            </span>
             <button onClick={logout} className="text-sm text-gray-600">
               Logout
             </button>

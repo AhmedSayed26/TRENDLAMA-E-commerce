@@ -35,7 +35,7 @@ export default function RegisterPage() {
       }
       await register(name.trim(), email, password);
       router.push("/");
-    } catch (err: unknown) {
+    } catch {
       setError("Failed to register. Please try again.");
     } finally {
       setLoading(false);

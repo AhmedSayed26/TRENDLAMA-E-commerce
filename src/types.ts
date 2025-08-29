@@ -27,7 +27,7 @@ export type OrderType = {
   userId: string;
   items: CartItemsType;
   total: number;
-  createdAt: string; // ISO string
+  createdAt: string; 
 };
 
 export type OrdersStateType = {
@@ -38,6 +38,7 @@ export type OrdersStateType = {
 export type OrdersActionsType = {
   addOrder: (order: OrderType) => void;
   clearOrdersForUser: (userId: string) => void;
+  getOrdersByEmail: (email: string) => OrderType[];
 };
 
 export const shippingFormSchema = z.object({
@@ -87,6 +88,7 @@ export type AuthUser = {
   id: string;
   email: string;
   name?: string;
+  password?: string; 
 };
 
 export type AuthStoreStateType = {

@@ -22,7 +22,7 @@ export default function SearchBar() {
     clearSearch();
   };
 
-  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       e.currentTarget.blur();
     }
@@ -37,7 +37,7 @@ export default function SearchBar() {
         className="text-xs sm:text-sm outline-none flex-1 min-w-0 placeholder:text-gray-400"
         value={inputValue}
         onChange={handleInputChange}
-        onKeyPress={handleKeyPress}
+        onKeyDown={handleKeyDown}
       />
       {inputValue && (
         <button
