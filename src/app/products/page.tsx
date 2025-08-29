@@ -4,10 +4,12 @@ import React from "react";
 export default async function productpage({
   searchParams,
 }: {
-  searchParams: { category?: string; sort?: string };
+  searchParams: Promise<{ category?: string; sort?: string }>;
 }) {
-  const category = searchParams.category || "";
-  const sort = searchParams.sort || "newest";
+  const params = await searchParams;
+  const category = params.category || "";
+  const sort = params.sort || "newest";
+  
   return (
     <div className="">
       <ProductList

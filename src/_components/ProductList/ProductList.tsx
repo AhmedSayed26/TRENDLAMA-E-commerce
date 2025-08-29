@@ -129,7 +129,7 @@ export default function ProductList({
     },
   ];
 
-  let sortedProducts = [...products];
+  const sortedProducts = [...products];
 
   if (sort === "asc") {
     sortedProducts.sort((a, b) => a.price - b.price);
@@ -160,7 +160,7 @@ export default function ProductList({
       )}
       <Link
         href={category ? `products/?category=${category}` : "/products"}
-        className="flex justify-end mt-4 underline text-md text-gray-600"
+        className="flex justify-end mt-4 underline text-sm text-gray-500"
       >
         View All Products
       </Link>

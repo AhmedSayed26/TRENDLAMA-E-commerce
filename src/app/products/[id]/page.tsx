@@ -102,7 +102,7 @@ const products: ProductType[] = [
   },
   {
     id: 8,
-    name: "Levi’s Classic Denim",
+    name: "Levi's Classic Denim",
     shortDescription:
       "Lorem ipsum dolor sit amet consect adipisicing elit lorem ipsum dolor sit.",
     description:
@@ -114,22 +114,24 @@ const products: ProductType[] = [
   },
 ];
 
-export default function ProductPage({
+export default async function ProductPage({
   params,
   searchParams,
 }: {
-  params: { id: string };
-  searchParams: { color?: string; size?: string };
+  params: Promise<{ id: string }>;
+  searchParams: Promise<{ color?: string; size?: string }>;
 }) {
-  const { id } = params;
+  const { id } = await params;
+  const { color, size } = await searchParams;
+  
   const product = products.find((p) => p.id === Number(id));
 
   if (!product) {
     return <div className="p-8">Product not found</div>;
   }
 
-  const selectedSize = searchParams.size || product.sizes[0];
-  const selectedColor = searchParams.color || product.colors[0];
+  const selectedSize = size || product.sizes[0];
+  const selectedColor = color || product.colors[0];
 
   return (
     <div className="flex flex-col gap-4 lg:flex-row md:gap-12 mt-12">

@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { Suspense } from "react";
 import { CartItemType, ShippingFormInputs } from "@/types";
 import { useSearchParams, useRouter } from "next/navigation";
 import { ArrowRight, Trash2 } from "lucide-react";
@@ -9,6 +9,7 @@ import ShippingPayment from "./../../_components/ShippingPayment/ShippingPayment
 import Image from "next/image";
 import useCartStore from "@/stores/cartStore";
 import { toast } from "react-toastify";
+
 const steps = [
   {
     id: 1,
@@ -24,16 +25,18 @@ const steps = [
   },
 ];
 
-export default function CartPage() {
+function CartPageContent() {
   const { cart, removeFromCart } = useCartStore();
   const [shippingForm, setShippingForm] = useState<ShippingFormInputs>();
   const searchparams = useSearchParams();
   const router = useRouter();
   const activeStep = parseInt(searchparams.get("step") || "1");
+  
   const HandelRemoveItemFromCart = (item: CartItemType) => {
     removeFromCart(item);
     toast.success("Item removed from cart");
   };
+  
   return (
     <div className="flex flex-col gap-8 items-center justify-center mt-12">
       <h1 className="text-2xl font-medium">Your Shopping Cart</h1>
@@ -156,5 +159,13 @@ export default function CartPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function CartPage() {
+  return (
+    <Suspense fallback={<div className="flex items-center justify-center mt-12">Loading cart...</div>}>
+      <CartPageContent />
+    </Suspense>
   );
 }
